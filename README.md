@@ -1,88 +1,78 @@
-# Real-Time eLearning Platform
+eLearning Platform
+A full-stack web application built with Django that provides a collaborative online learning environment for teachers and students. Teachers can create and manage courses, while students can browse, enroll, and interact — all with real-time chat powered by Django Channels and WebSockets.
 
-Full-stack educational platform with WebSocket-based real-time chat, role-based authentication, and course management system.
+Features
+Authentication & Roles
 
-## 🎯 Project Overview
+Custom user model with role-based access (Student / Teacher)
+Separate registration flows for students and teachers
+Profile photo upload during registration
+Secure login/logout with Django's built-in authentication
 
-Interactive learning management system supporting teachers and students with real-time communication capabilities.
+For Teachers
 
-## ✨ Key Features
+Create courses with title, description, and uploadable materials
+Manage enrollments — view enrolled students, remove or block/unblock students
+Receive notifications when a student enrolls in their course
+Search users — filter by role, name, or email with pagination and optional blocked-user exclusion
+Mark all notifications as read in one click
 
-- **Real-Time Chat**: WebSocket-based course chat using Django Channels + Redis
-- **Role-Based Auth**: Separate teacher/student dashboards and permissions
-- **Course Management**: Full CRUD operations for courses, enrollment, feedback
-- **Auto-Expiring Status Updates**: 24-hour temporary student status posts
-- **Responsive UI**: Bootstrap 5 with custom CSS
+For Students
 
-## 🛠️ Technologies
+Browse available courses and enroll with a single click
+View enrolled courses and access course details and materials
+Leave feedback on courses they are enrolled in
+Blocked student handling — students blocked from a course cannot re-enroll
 
-**Backend:**
-- Django 5.2.3
-- Django Channels 4.0+
-- Redis 5.0+ (message broker)
-- SQLite (development) / PostgreSQL-ready
+Real-Time Course Chat
 
-**Frontend:**
-- Django Templates
-- Bootstrap 5
-- JavaScript (WebSocket client)
+WebSocket-powered group chat per course using Django Channels
+Only the course teacher and enrolled students can access the chat room
+Join/leave system messages broadcast to the group
+Backed by Redis as the channel layer for message brokering
 
-## 🏗️ Architecture
+Additional
 
-- **3-Tier Application**: Presentation, Application, Data layers
-- **MVT Pattern**: Model-View-Template (Django standard)
-- **WebSocket Flow**: Client → Django Channels → Redis → Broadcast to group
-- **Database**: 5 normalized tables (User, Course, Enrollment, Feedback, StatusUpdate)
+Flash message notifications with Bootstrap styling
 
-## 📊 Technical Highlights
+Tech Stack
 
-- Custom User model extending AbstractUser
-- ASGI deployment with Daphne server
-- Redis pub/sub for horizontal scalability
-- CSRF protection and session-based authentication
-- Unit tests for core functionality
+LayerTechnologyBackendPython, Django 4+Real-TimeDjango Channels, Daphne, WebSocketsMessage BrokerRedisDatabaseSQLite (development)FrontendHTML, Bootstrap 5, JavaScriptAPI (future)Django REST FrameworkFile HandlingPillow (image uploads)
+Status update system (24-hour rolling window, one active status per user)
+Django REST Framework installed for future API expansion
+Responsive UI built with Bootstrap 5 and Bootstrap Icons
 
-## 🚀 Setup & Installation
+Installation
+# Clone the repository
+git clone https://github.com/YOUR_USERNAME/elearning-platform.git
+cd elearning-platform/elearning_platform
 
-1. **Install dependencies:**
-```bash
-   python -m venv venv
-   source venv/bin/activate
-   pip install -r requirements.txt
-```
+# Create and activate a virtual environment
+python -m venv venv
+source venv/bin/activate        # macOS/Linux
+venv\Scripts\activate           # Windows
 
-2. **Start Redis:**
-```bash
-   redis-server
-```
+# Install dependencies
+pip install -r requirements.txt
 
-3. **Run migrations:**
-```bash
-   python manage.py migrate
-```
+# Apply database migrations
+python manage.py migrate
 
-4. **Start server:**
-```bash
-   daphne -p 8000 elearning_platform.asgi:application
-```
+# Create a superuser (optional, for admin access)
+python manage.py createsuperuser
 
-5. **Access at:** http://127.0.0.1:8000
+# Terminal 1 — Start Redis
+redis-server
 
-## 📁 Project Structure
-├── elearning_platform/  # Main Django project
-├── core/               # Main application
-│   ├── models.py      # Database models
-│   ├── views.py       # Business logic
-│   ├── consumers.py   # WebSocket consumers
-│   ├── routing.py     # WebSocket routing
-│   └── templates/     # HTML templates
-├── static/            # CSS, JS files
-├── requirements.txt   # Dependencies
-└── README.md         # This file
-## 🎓 Course Context
+# Terminal 2 — Start the Django development server
+python manage.py runserver
 
-Developed for Web Development module. Includes comprehensive 18-page technical report analyzing architecture, implementation decisions, and trade-offs.
+With daphne in INSTALLED_APPS, Django automatically uses the ASGI server, enabling WebSocket support for the chat feature.
+Open your browser and navigate to http://127.0.0.1:8000/.
 
-## 👤 Author
+Key Design Decisions
 
-Meetali Mandhare - CS Student specializing in ML/AI
+Custom User Model — extends Django's AbstractUser with an is_teacher flag and optional photo field, enabling clean role-based access control throughout the app.
+Course Blocking — a separate CourseBlock model ensures blocked students cannot re-enroll, with teachers able to block/unblock at the course level.
+WebSocket Authentication — the chat consumer uses AuthMiddlewareStack to verify the user's session, and checks enrollment status before allowing access to the chat room.
+24-Hour Status Window — status updates auto-expire after 24 hours, keeping the dashboard clean without requiring manual cleanup.
