@@ -68,7 +68,7 @@ redis-server
 python manage.py runserver
 
 With daphne in INSTALLED_APPS, Django automatically uses the ASGI server, enabling WebSocket support for the chat feature.
-Open your browser and navigate to http://127.0.0.1:8000/.
+Open your browser and navigate to http://127.0.0.1:8000/login to access the login page.
 
 ## Key Design Decisions
 
