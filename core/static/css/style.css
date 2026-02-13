@@ -1,0 +1,24 @@
+:root{
+  --radius: 14px;
+}
+.card {
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.card-header {
+  font-weight: 600;
+}
+.navbar-brand { letter-spacing: .2px; }
+.form-control, .form-select, .btn { border-radius: 10px; }
+.list-group-item { border: 0; border-bottom: 1px solid rgba(0,0,0,.06); }
+.badge { font-weight: 500; }
+
+.status-form .form-control { min-height: 48px; }
+.feed .card-text { font-size: 0.98rem; line-height: 1.45; }
+.feed time { font-size: .85rem; color: #6c757d; }
+
+.section-title{
+  display:flex; align-items:center; gap:.5rem; margin: 1.5rem 0 .75rem;
+  font-weight:700;
+}
+.section-title i{ opacity:.8; }

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.username }}!</h2>
+
+<!-- Teacher Notifications -->
+{% if user.is_teacher and notifications %}
+<div class="card border-warning mb-4">
+  <div class="card-header bg-warning text-dark">
+    <strong>📢 Notifications</strong>
+  </div>
+  <div class="card-body">
+    <ul class="list-group mb-3">
+      {% for n in notifications %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        {{ n.message }}
+        {% if n.link %}
+        <a href="{{ n.link }}" class="btn btn-sm btn-primary">View</a>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    <form method="post" action="{% url 'mark_notifications_read' %}">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-sm btn-outline-secondary">Mark all as read</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<!-- Flash Messages -->
+{% if messages %}
+<div class="alert alert-info">
+  {% for message in messages %}
+    <div>{{ message }}</div>
+  {% endfor %}
+</div>
+{% endif %}
+
+<!-- User Role -->
+<p class="lead">
+  You are logged in as:
+  <span class="badge bg-{% if user.is_teacher %}success{% else %}info{% endif %}">
+    {% if user.is_teacher %}Teacher{% else %}Student{% endif %}
+  </span>
+</p>
+
+<!-- Links -->
+{% if user.is_teacher %}
+<div class="card mt-4">
+  <div class="card-header bg-primary text-white">🎓 Teacher Tools</div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><a href="{% url 'create_course' %}">➕ Create New Course</a></li>
+    <li class="list-group-item"><a href="{% url 'my_courses' %}">📋 View My Courses</a></li>
+    <li class="list-group-item"><a href="{% url 'search_users' %}">🔎 Search Students & Teachers</a></li>
+  </ul>
+</div>
+{% else %}
+<div class="card mt-4">
+  <div class="card-header bg-info text-white">📚 Student Tools</div>
+  <ul class="list-group list-group-flush">
+    <li class="list-group-item"><a href="{% url 'course_list' %}">📚 Browse Available Courses</a></li>
+    <li class="list-group-item"><a href="{% url 'my_courses' %}">✅ My Enrolled Courses</a></li>
+  </ul>
+</div>
+{% endif %}
+
+{% endblock %}

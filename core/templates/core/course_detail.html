@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+  <div>
+    <h2 class="mb-1">{{ course.title }}</h2>
+    <small class="text-muted">by {{ course.teacher.username }}</small>
+  </div>
+  <div>
+    <a href="{% url 'my_courses' %}" class="btn btn-outline-secondary">
+      <i class="bi bi-arrow-left"></i> Back
+    </a>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Left: Overview -->
+  <div class="col-lg-7">
+    <div class="card shadow-sm mb-3">
+      <div class="card-header"><i class="bi bi-info-circle"></i> Overview</div>
+      <div class="card-body">
+        <p class="mb-2">{{ course.description }}</p>
+        {% if course.materials %}
+          <p class="mb-0">
+            <i class="bi bi-file-earmark-arrow-down"></i>
+            <a href="{{ course.materials.url }}" download>Download materials</a>
+          </p>
+        {% else %}
+          <p class="text-muted mb-0">No materials uploaded yet.</p>
+        {% endif %}
+      </div>
+      <div class="card-footer text-muted">
+        Created {{ course.created_at|date:"M d, Y" }}
+      </div>
+    </div>
+
+    <div class="d-flex gap-2">
+      <a href="{% url 'course_chat' course.id %}" class="btn btn-outline-primary">
+        <i class="bi bi-chat-dots"></i> Open Course Chat
+      </a>
+      {% if not user.is_teacher and enrolled %}
+        <a href="{% url 'leave_feedback' course.id %}" class="btn btn-outline-secondary">
+          <i class="bi bi-pencil-square"></i> Leave Feedback
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right: Feedback -->
+  <div class="col-lg-5">
+    <div class="card shadow-sm">
+      <div class="card-header"><i class="bi bi-chat-left-text"></i> Feedback</div>
+      <ul class="list-group list-group-flush">
+        {% for fb in feedbacks %}
+          <li class="list-group-item">
+            <strong>{{ fb.student.username }}</strong>
+            <small class="text-muted d-block">on {{ fb.created_at|date:"M d, Y" }}</small>
+            <div class="mt-1">{{ fb.text }}</div>
+          </li>
+        {% empty %}
+          <li class="list-group-item text-muted">No feedback yet.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

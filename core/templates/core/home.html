@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+
+
+
+<h2 class="mb-3 d-flex align-items-center gap-2">
+  Welcome, {{ user.username }}!
+  <span class="badge bg-{% if user.is_teacher %}success{% else %}info{% endif %}">
+    {% if user.is_teacher %}Teacher{% else %}Student{% endif %}
+  </span>
+</h2>
+
+{% if user.is_teacher and notifications %}
+<div class="card border-warning-subtle mb-4">
+  <div class="card-header bg-warning-subtle">
+    <i class="bi bi-megaphone"></i> Notifications
+  </div>
+  <ul class="list-group list-group-flush">
+    {% for n in notifications %}
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <span>{{ n.message }}</span>
+        {% if n.link %}
+          <a href="{{ n.link }}" class="btn btn-sm btn-outline-primary">View</a>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+  <div class="card-body">
+    <form method="post" action="{% url 'mark_notifications_read' %}">
+      {% csrf_token %}
+      <button class="btn btn-sm btn-secondary"><i class="bi bi-check2-all"></i> Mark all as read</button>
+    </form>
+  </div>
+</div>
+{% endif %}
+
+<div class="row g-4">
+  <!-- Status composer -->
+  <div class="col-lg-5">
+    <div class="card">
+      <div class="card-header"><i class="bi bi-pencil-square"></i> Post a status</div>
+      <div class="card-body">
+        <form method="post" class="status-form">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button class="btn btn-primary"><i class="bi bi-send-fill"></i> Post</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Feed -->
+  <div class="col-lg-7">
+    <h5 class="section-title"><i class="bi bi-chat-right-text"></i> Your updates</h5>
+    <div class="feed">
+      {% for status in statuses %}
+        <div class="card mb-3">
+          <div class="card-body">
+            <p class="card-text mb-2">{{ status.content }}</p>
+            <time datetime="{{ status.created_at|date:'c' }}">
+              <i class="bi bi-clock"></i>
+              {{ status.created_at|date:"M d, Y H:i" }}
+            </time>
+          </div>
+        </div>
+      {% empty %}
+        <div class="text-muted">No updates yet.</div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<!-- Tools -->
+<div class="row g-4 mt-1">
+  {% if user.is_teacher %}
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header bg-primary text-white">
+          <i class="bi bi-mortarboard"></i> Teacher Tools
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><i class="bi bi-file-earmark-plus me-2"></i><a href="{% url 'create_course' %}">Create New Course</a></li>
+          <li class="list-group-item"><i class="bi bi-journal-text me-2"></i><a href="{% url 'my_courses' %}">View My Courses</a></li>
+          <li class="list-group-item"><i class="bi bi-search me-2"></i><a href="{% url 'search_users' %}">Search Students & Teachers</a></li>
+        </ul>
+      </div>
+    </div>
+  {% else %}
+    <div class="col-lg-6">
+      <div class="card">
+        <div class="card-header bg-info text-white">
+          <i class="bi bi-book"></i> Student Tools
+        </div>
+        <ul class="list-group list-group-flush">
+          <li class="list-group-item"><i class="bi bi-collection me-2"></i><a href="{% url 'course_list' %}">Browse Available Courses</a></li>
+          <li class="list-group-item"><i class="bi bi-check2-circle me-2"></i><a href="{% url 'my_courses' %}">My Enrolled Courses</a></li>
+        </ul>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+
+{% endblock %}
